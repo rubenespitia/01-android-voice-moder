@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.voicemoder_beta.ui.components.CustomButton
+import com.example.voicemoder_beta.ui.components.PrimaryButton
 import com.example.voicemoder_beta.ui.theme.VoiceModer_betaTheme
 
 class MainActivity : ComponentActivity() {
@@ -48,6 +49,13 @@ fun MainScreen(modifier: Modifier = Modifier) {
             onClick = {
                 // Acción del botón
                 Toast.makeText(context, "Botón presionado", Toast.LENGTH_SHORT).show()
+            }
+        )
+        PrimaryButton(
+            text = "Click Me",
+            onClick = {
+                // Acción del botón
+                Toast.makeText(context, "Botón presionado 2", Toast.LENGTH_SHORT).show()
             }
         )
     }

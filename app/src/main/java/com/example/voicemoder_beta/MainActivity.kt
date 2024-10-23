@@ -123,15 +123,16 @@ fun MainScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Greeting(name = "Pedrito")
+        //Greeting(name = "Pedrito")
         Spacer(modifier = Modifier.height(16.dp)) // Espacio entre el saludo y el botón
 
         // Botón para grabar/terminar grabación
-        CustomButton(
-            text = if (isRecording) "Detener Grabación" else "Iniciar Grabación",
+        PrimaryButton(
+            text = if (isRecording) "Detener Grabación" else "Iniciar Killer Voice",
             onClick = {
                 if (isRecording) {
                     onStopRecording()
+                    onPlayAudio()
                 } else {
                     onStartRecording()
                 }
@@ -140,13 +141,13 @@ fun MainScreen(
         )
         Spacer(modifier = Modifier.height(16.dp)) // Espacio entre los botones
 
-        // Botón para reproducir
+        /*// Botón para reproducir
         PrimaryButton(
             text = "Reproducir Audio",
             onClick = {
                 onPlayAudio()
             }
-        )
+        )*/
     }
 }
 

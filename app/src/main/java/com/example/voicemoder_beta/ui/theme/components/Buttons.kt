@@ -29,7 +29,7 @@ fun PrimaryButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifi
         onClick = onClick,
         modifier = modifier.padding(8.dp), // Margen externo del botón
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFF6200EE), // Fondo del botón
+            containerColor = Color(0xFFB30303), // Fondo del botón
             contentColor = Color.White // Color del texto
         ),
         shape = RoundedCornerShape(12.dp), // Bordes redondeados

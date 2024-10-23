@@ -2,6 +2,7 @@ package com.example.voicemoder_beta
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.media.PlaybackParams
@@ -55,7 +56,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding),
                         onStartRecording = { startRecording() },
                         onStopRecording = { stopRecording() },
-                        onPlayAudio = { pitch -> playAudio(pitch) } // Se pasa el pitch aquí
+                        onPlayAudio = { pitch, speed, volume, pan -> playAudio(pitch, speed, volume, pan) }  // Se pasa el pitch aquí
                     )
                 }
             }
@@ -87,7 +88,7 @@ class MainActivity : ComponentActivity() {
         mediaRecorder = null
     }
 
-    private fun playAudio(pitch: Float = 1.0f) {
+    private fun playAudio(pitch: Float = 1.0f, speed: Float = 1.0f, volume: Float = 1.0f, pan: Float = 0.0f) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             mediaPlayer = MediaPlayer().apply {
                 try {
@@ -95,10 +96,20 @@ class MainActivity : ComponentActivity() {
                     prepare()
                     val playbackParams = PlaybackParams().apply {
                         this.pitch = pitch  // Aplicar el pitch aquí
+                        this.speed = speed  // Aplicar la velocidad aquí
                     }
                     this.playbackParams = playbackParams
+                    setVolume(volume, volume)  // Aplicar el volumen
+                    setAudioAttributes(
+                        AudioAttributes.Builder()
+                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                            .setUsage(AudioAttributes.USAGE_MEDIA)
+                            .build()
+                    )
+                    setVolume(volume, volume)
+                    this.playbackParams = playbackParams
                     start()
-                    Toast.makeText(this@MainActivity, "Reproduciendo audio con pitch $pitch", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, "Reproduciendo con pitch $pitch y velocidad $speed", Toast.LENGTH_SHORT).show()
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
@@ -120,11 +131,14 @@ fun MainScreen(
     modifier: Modifier = Modifier,
     onStartRecording: () -> Unit,
     onStopRecording: () -> Unit,
-    onPlayAudio: (Float) -> Unit // Cambia aquí para aceptar el pitch
+    onPlayAudio: (Float, Float, Float, Float) -> Unit
 ) {
     val context = LocalContext.current
     var isRecording by remember { mutableStateOf(false) }
     var pitch by remember { mutableStateOf(1.0f) } // Valor de pitch inicial
+    var speed by remember { mutableStateOf(1.0f) } // Valor de velocidad inicial
+    var volume by remember { mutableStateOf(1.0f) } // Volumen inicial
+    var pan by remember { mutableStateOf(0.0f) } // Balance inicial
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -141,7 +155,7 @@ fun MainScreen(
             onClick = {
                 if (isRecording) {
                     onStopRecording()
-                    onPlayAudio(pitch)
+                    onPlayAudio(pitch, speed, volume, pan)
                 } else {
                     onStartRecording()
                 }
@@ -156,6 +170,33 @@ fun MainScreen(
             value = pitch,
             onValueChange = { pitch = it },
             valueRange = 0.5f..2.0f,
+            steps = 30
+        )
+
+        // Slider para ajustar la velocidad
+        Text(text = "Velocidad: ${"%.2f".format(speed)}")
+        Slider(
+            value = speed,
+            onValueChange = { speed = it },
+            valueRange = 0.5f..2.0f,
+            steps = 30
+        )
+
+        // Slider para ajustar el volumen
+        Text(text = "Volumen: ${"%.2f".format(volume)}")
+        Slider(
+            value = volume,
+            onValueChange = { volume = it },
+            valueRange = 0.0f..1.0f,
+            steps = 10
+        )
+
+        // Slider para ajustar el balance (panning)
+        Text(text = "Balance: ${"%.2f".format(pan)}")
+        Slider(
+            value = pan,
+            onValueChange = { pan = it },
+            valueRange = -1.0f..1.0f, // -1.0 para izquierda, 1.0 para derecha
             steps = 10
         )
 
@@ -184,7 +225,7 @@ fun GreetingPreview() {
         MainScreen(
             onStartRecording = {},
             onStopRecording = {},
-            onPlayAudio = {}
+            onPlayAudio = { _, _, _, _ -> }
         )
     }
 }
